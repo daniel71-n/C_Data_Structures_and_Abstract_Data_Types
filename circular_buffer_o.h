@@ -77,5 +77,5 @@ uint8_t CircularBuffer_write(CircularBuffer *cb_ptr, char char_to_write);  // wr
 bool CircularBuffer_is_empty(CircularBuffer *cb_ptr); 
 bool CircularBuffer_is_full(CircularBuffer *cb_ptr);
 void CircularBuffer_destroy_buffer(CircularBuffer *cb_ptr);  // free all the space that has been Malloc-ated.
-/*-----------------------------------------------Symbolic constants------------------------------------------*/
+
 
