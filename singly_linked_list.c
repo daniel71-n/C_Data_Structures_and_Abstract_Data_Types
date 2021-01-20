@@ -2,87 +2,32 @@
 #include <stdlib.h> // to be able to use NULL
 #include <stdio.h>
 
-Head *SLL_init(void){ // create and initialize a singly linked list
-    Head *head_ptr = NULL; 
-    if ((head_ptr = malloc(sizeof(Head)))){   // if malloc was successful, initialize the head struct instance as follows
-        head_ptr->firstNode_ptr = NULL;
-        head_ptr->lastNode_ptr = NULL; 
-        head_ptr->list_length = 0; 
+
+
+
+
+
+/*  *******************  Private Functions   ********************* */
+/* These only have file scope and are meant to be called from inside other functions in
+ * this file 
+ */
+
+static Node *SLL_recursive_reverse_P(Node *first_node_ptr){
+    if (first_node_ptr->next_ptr == NULL){
+       return first_node_ptr;   // reached the tail, so return it
+    }
+    else{
+        Node *new_head_ptr = SLL_recursive_reverse_P(first_node_ptr->next_ptr);   // advance the recursion and down the list
+         // when the first condition becomes true - the tail is reached - it's returned
+         // here and assigned to new_head_ptr;
+        first_node_ptr->next_ptr->next_ptr = first_node_ptr;    // given a-b-c, make c point to b
+        first_node_ptr->next_ptr = NULL;                        // and point b to null 
+                                                            // then one call down, point b
+                                                            // to a, and point a to null
+        return new_head_ptr; // this never changes; it's the old tail; it's used to go back down the call chain
     };
-    return head_ptr;
 };
 
-
-uint8_t SLL_prepend(Head *head_ptr, char the_value){ // add a node storing the_value to the head end of the list
-    /*return 1 if failed, 0 if successful */
-    uint8_t error_code = 1;
-    Node *the_new_node = malloc(sizeof(Node)); 
-    if (the_new_node){  // only do this if the call to malloc was successful
-        printf("the allocation for node was successful \n");
-        //initialize the variables inside the_new_node
-        the_new_node->data = the_value;
-        the_new_node->next_ptr = head_ptr->firstNode_ptr; 
-        //point head_ptr's first_node as well as last_node (if it's the only node so far) to it
-        // and increment the length
-        head_ptr->firstNode_ptr = the_new_node;
-        if(!head_ptr->list_length){     // if the list length is 0, i.e. 
-            head_ptr->lastNode_ptr = the_new_node;      // if this is the first (and thus only) none in the list, then it's also the last node
-        };
-        head_ptr->list_length++;
-        // set error_code to 0, as everything has worked, and return it
-        error_code=0;
-        return error_code;
-    };
-    printf("prepend failed\n");
-    return error_code; // the function will only get here if the if conditional above is false, meaning malloc failed
-};
-
-unsigned int SLL_get_length(Head *head_ptr){ // return an integer denoting the number of nodes in the list
-    return head_ptr->list_length;
-};
-
-
-uint8_t SLL_append(Head *head_ptr, char the_value){ // add a node storing the_value to the head end of the list
-    /*return 1 if failed, 0 if successful */
-    uint8_t error_code = 1;
-    Node *the_new_node = malloc(sizeof(Node)); 
-    if (the_new_node){  // only do this if the call to malloc was successful
-        //initialize the variables inside the_new_node
-        the_new_node->data = the_value;
-        the_new_node->next_ptr = NULL; 
-        //point head_ptr's last_node to it
-        // and increment the length
-        head_ptr->lastNode_ptr->next_ptr = the_new_node; // make the current tail point to the new tail
-        head_ptr->lastNode_ptr = the_new_node;
-        head_ptr->list_length++;
-        // set error_code to 0, as everything has worked, and return it
-        error_code=0;
-        return error_code;
-    };
-    return error_code; // the function will only get here if the if conditional above is false, meaning malloc failed
-};
-
-
-
-bool SLL_contains(Head *head_ptr, char the_value){
-    /* Iterate through the list looking for the_value.
-       If found, return true. Otherwise, return false
-    */
-    bool return_value = false; 
-    if (!head_ptr->list_length){    // if the list is empty, return false right away
-        return return_value;
-    };
-    Node *current_node = head_ptr->firstNode_ptr;
-    do{  // using a do while loop allows executing the body once at least - i.e. in the case where the list has only one item
-        if (current_node->data == the_value){
-            return_value = true;
-            return return_value;
-           };
-        current_node=current_node->next_ptr; // advance the loop. current node might now be NULL if its 'next_ptr' was NULL;
-    }while(current_node); // while current_node != NULL
-    
-    return return_value;
-};
 
 
 
@@ -117,6 +62,171 @@ static Node *SLL_find_index_P(Head *head_ptr, unsigned int the_index){      // n
     return node_before_index;
 };
 
+
+
+/*  *******************  End Private ********************* */
+
+
+
+
+
+
+Head *SLL_init(void){ 
+    /* create (allocate space with malloc) and initialize (set inner variables to the 
+       correct initial value) a singly linked list */
+    Head *head_ptr = NULL; 
+    if ((head_ptr = malloc(sizeof(Head)))){   // if malloc was successful, initialize the head struct instance as follows
+        head_ptr->firstNode_ptr = NULL;
+        head_ptr->lastNode_ptr = NULL; 
+        head_ptr->list_length = 0; 
+    };
+    return head_ptr;
+};
+
+
+
+
+uint8_t SLL_prepend(Head *head_ptr, char the_value){ 
+    /* add a node storing the_value to the head end of the list.
+       Return 1 if failed, 0 if successful 
+    */
+    uint8_t error_code = 1;
+    Node *the_new_node = malloc(sizeof(Node)); 
+    if (the_new_node){  // only do this if the call to malloc was successful
+        printf("the allocation for node was successful \n");
+        //initialize the variables inside the_new_node
+        the_new_node->data = the_value;
+        the_new_node->next_ptr = head_ptr->firstNode_ptr; 
+        //point head_ptr's first_node as well as last_node (if it's the only node so far) to it
+        // and increment the length
+        head_ptr->firstNode_ptr = the_new_node;
+        if(!head_ptr->list_length){     // if the list length is 0, i.e. 
+            head_ptr->lastNode_ptr = the_new_node;      // if this is the first (and thus only) none in the list, then it's also the last node
+        };
+        head_ptr->list_length++;
+        // set error_code to 0, as everything has worked, and return it
+        error_code=0;
+        return error_code;
+    };
+    printf("prepend failed\n");
+    return error_code; // the function will only get here if the if conditional above is false, meaning malloc failed
+};
+
+unsigned int SLL_get_length(Head *head_ptr){ // return an integer denoting the number of nodes in the list
+    return head_ptr->list_length;
+};
+
+
+
+
+
+uint8_t SLL_append(Head *head_ptr, char the_value){ 
+    /*  Add a node storing the_value to the tail end of the list.
+        Return 1 if failed, 0 if successful 
+    */
+    uint8_t error_code = 1;
+    Node *the_new_node = malloc(sizeof(Node)); 
+    if (the_new_node){  // only do this if the call to malloc was successful
+        //initialize the variables inside the_new_node
+        the_new_node->data = the_value;
+        the_new_node->next_ptr = NULL; 
+        //point head_ptr's last_node to it
+        // and increment the length
+        head_ptr->lastNode_ptr->next_ptr = the_new_node; // make the current tail point to the new tail
+        head_ptr->lastNode_ptr = the_new_node;
+        head_ptr->list_length++;
+        // set error_code to 0, as everything has worked, and return it
+        error_code=0;
+        return error_code;
+    };
+    return error_code; // the function will only get here if the if conditional above is false, meaning malloc failed
+};
+
+
+
+
+bool SLL_contains(Head *head_ptr, char the_value){
+    /* Iterate through the list looking for the_value.
+       If found, return true. Otherwise, return false
+    */
+    bool return_value = false; 
+    if (!head_ptr->list_length){    // if the list is empty, return false right away
+        return return_value;
+    };
+    Node *current_node = head_ptr->firstNode_ptr;
+    do{  // using a do while loop allows executing the body once at least - i.e. in the case where the list has only one item
+        if (current_node->data == the_value){
+            return_value = true;
+            return return_value;
+           };
+        current_node=current_node->next_ptr; // advance the loop. current node might now be NULL if its 'next_ptr' was NULL;
+    }while(current_node); // while current_node != NULL
+    
+    return return_value;
+};
+
+
+
+
+
+void SLL_Ireverse_list(Head **head_ref){ 
+    /* Iteratively reverse the list in place. 
+       The argument is a pointer to a pointer, i.e. a reference pointer.
+
+    head_ref is a pointer to Head pointer. This allows changing what the head_ref
+    argument points to back in caller space 
+    */
+    Node *newhead;      // this will eventually be what is now the current tail
+    Node *tail = NULL;  // start building a list from here, on to the left - i.e. tail to head
+    Node *current = (*head_ref)->firstNode_ptr;     // tmp pointer used to advance through the list
+    (*head_ref)->lastNode_ptr = (*head_ref)->firstNode_ptr;     // firstNode_ptr will end up being the tail of the reversed list,
+                                                                // pointed to by lastNode_ptr
+    while (current->next_ptr){   // this will stop at the last node, so that last case needs to be handled below
+        newhead = current->next_ptr;  // used to remember the next node
+        current->next_ptr = tail;   // essentially, make each node to the right point 
+        tail = current;             // backward to the previous node 
+
+        current = newhead;  // assign current the next node remember above; this advances the loop
+    };
+    // as mentioned, case wherecurrent->next_ptr is NULL (i.e. the last node) isn't
+    // covered by the while loop, so needs to be handled here
+    newhead->next_ptr = tail;       // newhead already points to tail from the last iteration of the while,
+                                    // since it always points to the next node ahead of the current one
+    (*head_ref)->firstNode_ptr = newhead;   // the reversal is complete
+};
+
+
+
+
+
+
+void SLL_Rreverse_list(Head **head_ref){    
+    /* This function doesn't actually reverse the list itself. 
+       It merely serves as a 'nonlocal'-type scope for SLL_recursive_reverse(),
+       which it calls to carry out the actual recursion on its behalf. 
+    
+       Head and Node are different types and are internally 
+       structured differently, making it awkward to write a recursive
+       function for that case. To start with, it would mean added overhead
+       as there are more pointer addresses the CPU needs to read.
+
+       It makes more sense to write a recursive function that operates
+       on a single type (Node), and does the actual reversal,
+       and another one to remember a few addresses and to call the former 
+       - it's easier to write and provides better performance.
+    */
+    Node *old_head = (*head_ref)->firstNode_ptr;
+    Node *new_head = SLL_recursive_reverse_P((*head_ref)->firstNode_ptr);   
+    // recursive_reverse will return the old tail as the new head of the reversed list
+    (*head_ref)->lastNode_ptr = old_head;   // the old head is now the tail
+    (*head_ref)->firstNode_ptr = new_head; // the old tail (returned by recursive_reverse) is now the head
+
+};
+
+
+
+
+
 uint8_t SLL_insert_index(Head *head_ptr, char the_value, unsigned int the_index){
     unsigned int return_value = 1; // error
     
@@ -142,6 +252,9 @@ uint8_t SLL_insert_index(Head *head_ptr, char the_value, unsigned int the_index)
 };
 
 
+
+
+
 unsigned int SLL_occurence_count(Head *head_ptr, char the_value){ // count how many times the_value appears in the list
     /*  If the list is empty, return 0.
         If not, iterate through the list by making current_node equal to current_node->next.
@@ -161,6 +274,9 @@ unsigned int SLL_occurence_count(Head *head_ptr, char the_value){ // count how m
     };
     return counter;
 };
+
+
+
 
 
 char SLL_pop_head(Head *head_ptr){ 
@@ -185,6 +301,8 @@ char SLL_pop_head(Head *head_ptr){
     };
     return return_value;
 };
+
+
 
 
 char SLL_pop_tail(Head *head_ptr){ 
@@ -239,7 +357,11 @@ char SLL_pop_tail(Head *head_ptr){
      };
     return return_value;
 };        
-        
+
+
+
+
+
 char SLL_pop_index(Head *head_ptr, unsigned int the_index){
     /* Get the value at index the_index. Return that, if successful, or Nul if not.
        If the_index is out of bounds (i.e. > head_ptr->list_length), Nul is returned.
@@ -275,37 +397,11 @@ char SLL_pop_index(Head *head_ptr, unsigned int the_index){
 
 
 
-void SLL_Ireverse_list(Head **head_ref){ 
-    /* Iteratively reverse the list in place. 
-       The argument is a pointer to a pointer, i.e. a reference pointer.
 
-    head_ref is a pointer to Head pointer. This allows changing what the head_ref
-    argument points to back in caller space 
+
+void SLL_destroy_list(Head *head_ptr){
+    /*  free all the memory associated with the linked list
     */
-    Node *newhead;      // this will eventually be what is now the current tail
-    Node *tail = NULL;  // start building a list from here, on to the left - i.e. tail to head
-    Node *current = (*head_ref)->firstNode_ptr;     // tmp pointer used to advance through the list
-    (*head_ref)->lastNode_ptr = (*head_ref)->firstNode_ptr;     // firstNode_ptr will end up being the tail of the reversed list,
-                                                                // pointed to by lastNode_ptr
-    while (current->next_ptr){   // this will stop at the last node, so that last case needs to be handled below
-        newhead = current->next_ptr;  // used to remember the next node
-        current->next_ptr = tail;   // essentially, make each node to the right point 
-        tail = current;             // backward to the previous node 
-
-        current = newhead;  // assign current the next node remember above; this advances the loop
-    };
-    // as mentioned, case wherecurrent->next_ptr is NULL (i.e. the last node) isn't
-    // covered by the while loop, so needs to be handled here
-    newhead->next_ptr = tail;       // newhead already points to tail from the last iteration of the while,
-                                    // since it always points to the next node ahead of the current one
-    (*head_ref)->firstNode_ptr = newhead;   // the reversal is complete
-};
-
-
-
-
-
-void SLL_destroy_list(Head *head_ptr){ // free all the memory associated with the linked list
     Node *current_node= head_ptr->firstNode_ptr;
     free(head_ptr);  // free the head struct
     Node *tmp_ptr; 
@@ -323,6 +419,7 @@ void SLL_destroy_list(Head *head_ptr){ // free all the memory associated with th
     free(current_node); // last node, the tail (which the while loop didn't cover)
 
 };
+
 
 
 

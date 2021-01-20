@@ -8,8 +8,6 @@
 
 /* ************ Abbreviations ************** */
 /* Sll = singly linked list 
- * R = recursive (in SLL_Rreverse_list)
- * I = iterative (in SLL_Ireverse_list)
  */
 
 
@@ -50,9 +48,17 @@ char SLL_pop_tail(Head *head_ptr); // get the value of the last node in the list
 char SLL_pop_index(Head *head_ptr, unsigned int the_index); // get the value of the node at index the_index and remove the node
 unsigned int SLL_occurence_count(Head *head_ptr, char the_value); // count how many times the_value appears in the list
 void SLL_remove_duplicates(Head *head_ptr); // make sure there's a single instance of any one item in the list
-void SLL_Ireverse_list(Head **head_ref); // reverse the list iteratively and return a Head pointer whose firstNode_ptr points to the new head
-Head *SLL_Rreverse_list(Head *head_ptr); // reverse the list recursively and return a Head pointer whose firstNode_ptr points to the new head
+void SLL_Ireverse_list(Head **head_ref); // reverse the list iteratively, in place
+void SLL_Rreverse_list(Head **head_ref); // in-place recursive reversion 
 void SLL_destroy_list(Head *head_ptr); // free all the memory associated with the linked list
+
+
+
+
+
+
+
+
 
 
 
