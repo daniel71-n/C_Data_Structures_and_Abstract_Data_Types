@@ -72,9 +72,11 @@ unsigned int Queue_count(Queue *queue_ptr){
 
 
 void Queue_destroy(Queue **queue_ptr){
-    /* Call free on all the items in the queue,
-       and then finally on the Queue pointer itself,
-       before setting the pointer to NULL
+    /* Call free on *queue_ptr, and set it to NULL. 
+
+       Note that the QueueItems in the queue aren't malloc'ed
+       but declared manually outside the queue, and so 
+       there's nothing else to free.
     */
     QueueItem *current = (*queue_ptr)->head;
     QueueItem *next;
