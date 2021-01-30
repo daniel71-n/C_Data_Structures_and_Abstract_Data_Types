@@ -2,6 +2,7 @@
 Various data structures and implementations of Abstract Data Types
 
 Note:
+
 None of the implementations are thread-safe. 
 The point is to illustrate the DSs and ADTs themselves, rather than thread-safety.
 Fundamentally, threads imply the existence of some kind of operating system, while one could implement and use data structures on 'bare metal'.
