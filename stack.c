@@ -61,7 +61,7 @@ void Stack_init(Stack **stack_ptr){
 
 
 
-unsigned int Queue_count(Stack *stack_ptr){
+unsigned int Stack_count(Stack *stack_ptr){
     /* Return the number of items on the stack*/
     return stack_ptr->count;
 };
