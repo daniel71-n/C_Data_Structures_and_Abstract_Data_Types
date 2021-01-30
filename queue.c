@@ -78,14 +78,6 @@ void Queue_destroy(Queue **queue_ptr){
        but declared manually outside the queue, and so 
        there's nothing else to free.
     */
-    QueueItem *current = (*queue_ptr)->head;
-    QueueItem *next;
-
-    while (current){
-        next = current->next;
-        free(current);
-        current = next;
-    };
     free(*queue_ptr);
     *queue_ptr = NULL;
 
