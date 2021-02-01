@@ -6,7 +6,8 @@
 
     Stacks and queues are essentially the inverse of one another 
     in that the former always removes the oldest item  added, 
-    while the latter removes the latest item. 
+    while the latter removes the latest item. Both offer linear
+    (sequential) access to the data, just like a linked list.
    
     It's worth noting that stacks and queues are not 
     data structures, but abstract data types. Conceptually, 
@@ -23,6 +24,17 @@
     defined by the interface they provide, which is in terms of 
     the data flow: first-in-first-first-out for queues and 
     last-in-first-out for stacks.
+
+    --------------Overflow and underflow--------------------
+    This implementation of a queue doesn't have a fixed size, i.e. 
+    there's no queue overflow scenario that's accounted for.
+    This could easily be incorporated, however. For example, 
+    by having the Queue_enqueue() function check the count member 
+    and stop enqueing new items when its value has reached a defined limit.
+
+    Queue 'underflow', is, on the other hand, accounted for, as Queue_dequeue() 
+    will return a NULL pointer when called on an empty queue.
+
 */
 
 
@@ -145,7 +157,7 @@ QueueItem *Queue_dequeue(Queue *queue_ptr){
 QueueItem *Queue_peek(Queue *queue_ptr){
     /* Return the oldest item in the queue
        but without removing it from the queue,
-       so that this is the item that will be returned
+       such that this is the item that will be returned
        by Queue_dequeue, when called.
 
        Returns NULL if called on an empty queue.
