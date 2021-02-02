@@ -46,6 +46,36 @@ static uint16_t BST_find_depth_P(BinaryTree *tree){
     // left_depth and right_depth are actually 7 nodes deep, and thus are equal,
     // and the function returns 7, it doesn't matter which of the paths it refers to.
 }
+
+
+
+static void BST_cut_down_P(BinaryTree *tree_ptr){
+    /* Traverse the tree in post-order (left-right-root)
+       and free all the nodes. 
+
+       So the left node is freed first, then the right node, then the root. 
+       The free operations are done on the way back up the call chain, so
+       it all happens from the bottom-up -- from the leaves to root
+
+       The base case is a NULL pointer. The function will go as far left as possible. 
+       When it runs into a dead end (NULL), it will then try to go as far right
+       as possible, with the same outcome. The next thing to do is then to free
+       the current node, as it's a childless node (no left or right children). 
+    */
+    if (!tree_ptr){
+        return;
+    }
+    else{ // go as far left as possible
+        BST_cut_down_P(tree_ptr->left_child);
+        //go as far right as possible
+        BST_cut_down_P(tree_ptr->right_child); 
+        // nowhere left to go: tree_ptr is a leaf (childless node). Delete it and return
+        free(tree_ptr);
+        return;
+    }
+};
+
+
 /* ---------------------------------------------------------------- */
 /* ***************************** End Private ********************** */
 
@@ -338,13 +368,25 @@ return tree;
 
 
 
+void BST_destroy(BinaryTree **tree_ref){
+    /* Free all the maclloc'ed memory associated with
+       the tree, then set the tree pointer back in caller
+       space to NULL (note that the function parameter here
+       is a tree *reference* pointer).
+
+       The actual freeing is done by BST_cut_down_P(),
+       which recursively traverses the tree 'in post-order'
+       and frees all the nodes.
+    */
+    BST_cut_down_P(*tree_ref);
+    *tree_ref = NULL;
+};
 
 
 /*
 To implement: 
 BinaryTree *BST_from_array(char the_array[]);
 void BST_to_array(char the_array[]);
-void BST_delete_tree(BinaryTree **tree);
 BinaryTree *BST_remove_duplicates(BinaryTree* tree);
 BinaryTree *BST_copy_tree(BinaryTree *tree);
 char BST_find_nth_max(BinaryTree *tree);

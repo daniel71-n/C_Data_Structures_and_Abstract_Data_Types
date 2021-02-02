@@ -20,6 +20,7 @@ char BST_find_max(BinaryTree *tree);
 void BST_print(BinaryTree *tree);
 bool BST_is_same(BinaryTree *tree1, BinaryTree *tree2);
 BinaryTree *BST_remove_node(BinaryTree *tree, char the_value);
+void BST_destroy(BinaryTree **tree_ref);
 
 
 
