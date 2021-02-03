@@ -38,7 +38,74 @@
 */
 
 
-void Stack_init(Stack **stack_ptr){
+
+
+
+
+
+
+/*  *********************** PRIVATE FUNCTIONS ********************* */
+/*  --------------------------------------------------------------  */ 
+
+static void Stack_init_local_P(Stack the_stack){
+    /* Initialize stack_ptr by initializing its values. 
+
+       Malloc is not called - heap memory is not allocated. 
+       This means the stack has local scope (defined in a function)
+       and thus automatic duration: i.e. it will be automatically
+       deallocated when it goes out of scope. 
+       Therefore you don't need (you musn't) call Stack_destroy
+       on a stack initialized with Stack_init_local().
+
+       Calling free() (which Stack_destroy() does internally)
+       on memory that wasn't allocated dynamically is UNDEFINED
+       BEHAVIOR.
+
+       If the stack being initialized is instead supposed to
+       be heap-allocated, use Stack_init() instead.
+    */
+    the_stack->count = 0;
+    the_stack->top = NULL;
+};
+
+
+
+static StackItem Stack_pop_whole_P(Stack the_stack){
+    /* Meant to be called from Stack_upend(). 
+
+       Stack_pop() returns Stack->top->contents,
+       which is a void pointer contained inside StackItem.
+
+       Stack_pop_whole_P() returns Stack->top, on the other hand,
+       which is a StackItem. 
+       This is used for moving a StackItem from one stack onto
+       another - as used by the Stack_upend() function. 
+       Because of that, the StackItem is NOT FREED by Stack_pop_whole_P()-- 
+       whereas Stack_pop() also calls free() on Stack->top before 
+       returning its 'contents' value.
+    */
+    if (!the_stack->count){
+        return the_stack->top;
+    };
+   
+    the_stack->count--;
+    StackItem item = the_stack->top;
+    the_stack->top = the_stack->top->previous;
+    
+    return item;
+};
+
+
+
+
+/*  ************************* END PRIVATE ************************* */
+/*  --------------------------------------------------------------  */ 
+
+
+
+
+
+void Stack_init(Stack *stack_ptr){
     /* Initialize a Stack object. 
 
        Takes a Stack reference pointer and calls malloc to allocate
@@ -63,7 +130,7 @@ void Stack_init(Stack **stack_ptr){
        the stack is meant to have local scope and thus automatic duration. 
         
     */
-    Stack *temp = malloc(sizeof(Stack));
+    Stack temp = malloc(sizeof(struct stack));
 
     if (!temp){
         *stack_ptr = NULL;
@@ -77,47 +144,15 @@ void Stack_init(Stack **stack_ptr){
 
 
 
-void Stack_init_local(Stack *stack_ptr){
-    /* Initialize stack_ptr by initializing its values. 
 
-       Malloc is not called - heap memory is not allocated. 
-       This means the stack has local scope (defined in a function)
-       and thus automatic duration: i.e. it will be automatically
-       deallocated when it goes out of scope. 
-       Therefore you don't need (you musn't) call Stack_destroy
-       on a stack initialized with Stack_init_local().
-
-       Calling free() (which Stack_destroy() does internally)
-       on memory that wasn't allocated dynamically is UNDEFINED
-       BEHAVIOR.
-
-       If the stack being initialized is instead supposed to
-       be heap-allocated, use Stack_init() instead.
-    */
-    stack_ptr->count = 0;
-    stack_ptr->top = NULL;
-};
-
-
-
-unsigned int Stack_count(Stack *stack_ptr){
+unsigned int Stack_count(Stack the_stack){
     /* Return the number of items on the stack*/
-    return stack_ptr->count;
-};
-
-
-void Stack_destroy(Stack **stack_ptr){
-    /* Call free on *stack_ptr, and set it to NULL. 
-    // to do
-    */
-    free(*stack_ptr);
-    *stack_ptr = NULL;
-
+    return the_stack->count;
 };
 
 
 
-void Stack_push(Stack *stack_ptr, StackItem *item_ptr){
+void Stack_push(Stack the_stack, StackItem the_item){
     /* Add an item to the stack.
     
     Note that the second argument is a StackItem pointer. 
@@ -139,46 +174,82 @@ void Stack_push(Stack *stack_ptr, StackItem *item_ptr){
     the consumer will have to know how to handle this 
     when returned by the Stack_pop() subroutine.
     */
-    item_ptr->previous = stack_ptr->top;
-    stack_ptr->top= item_ptr;
-    stack_ptr->count++;
+    the_item->previous = the_stack->top;
+    the_stack->top= the_item;
+    the_stack->count++;
 };
 
 
 
-StackItem *Stack_pop(Stack *stack_ptr){
+void *Stack_pop(Stack the_stack){
     /* Remove and return an item from the stack.
        This item is always the most recently added item, 
        according to the FIFO principle.
 
        If called on an empty stack, NULL is returned.
+
+
+       **** NOTE ****
+       By 'item', what's meant is not actually a StackItem
+       but the practical value that a StackItem was created
+       and pushed onto the stack for.
+
+       That is to say, Stack->top actually gets popped off
+       the stack, but what's returned is not Stack->top,
+       but Stack->top->contents, which is a void pointer
+       pointing to whatever type was fed to Stack_make_item()
+       that was then pushed onto the stack with Stack_push().
+
+       This means that the caller should know how to deal with
+       or interpret the returned value (what to cast this void
+       pointer to). 
+
+       Stack->top gets deallocated by calling free() on it.
+
+
+       **********************
+       For a function that returns Stack->top instead of 
+       Stack->top->contents, see Stack_upend() and
+       Stack_pop_whole_p().
     */
-    if (!stack_ptr->count){
-        return stack_ptr->top;
+    if (!the_stack->count){
+        return the_stack->top;
     };
-    stack_ptr->count--;
-    StackItem *item = stack_ptr->top;
-    stack_ptr->top = stack_ptr->top->previous;
-    return item;
+
+    the_stack->count--;
+    void *return_val = the_stack->top->contents;
+    StackItem temp = the_stack->top->previous;
+    free(the_stack->top);  
+    the_stack->top = temp;
+
+    return return_val;
 };
 
 
 
-StackItem *Stack_peek(Stack *stack_ptr){
+
+void *Stack_peek(Stack the_stack){
     /* Return the top of the stack (most recently
        added item) but without removing it from 
        the stack, such that this is the item that will 
        be returned by Stack_pop(), when called.
 
        Returns NULL if called on an empty queue.
+
+       **********
+       NOTE
+       The value returned isn't actually Stack->top,
+       but Stack->top->contents (read the notes for 
+       Stack_pop()  --> unlike Stack_pop(), though,
+       Stack_peek() does NOT deallocate Stack->top.
     */
-    return stack_ptr->top; 
+    return the_stack->top->contents; 
 };
 
 
 
 
-Stack *Stack_upend(Stack *stack_ptr){
+Stack Stack_upend(Stack the_stack){
     /* Upend a stack and return the new stack. 
 
        This is done by initializing a second stack first,
@@ -191,30 +262,32 @@ Stack *Stack_upend(Stack *stack_ptr){
        The second stack has automatic duration- so it will go
        out of scope when the function exits. 
     */
-    Stack newstack;     // local-scope, automatic-duration stack
-    Stack_init_local(&newstack);
+    struct stack newstack;     // local-scope, automatic-duration stack
+    // this is not a pointer to a stack struct (like the Stack)
+    Stack_init_local_P(&newstack);
     
-    StackItem *current = Stack_pop(stack_ptr);
+    StackItem current = Stack_pop_whole_P(the_stack);
 
     while (current){
         Stack_push(&newstack, current);
-        current = Stack_pop(stack_ptr);
+        current = Stack_pop_whole_P(the_stack);
     };
 
-    stack_ptr->top = newstack.top;
-    stack_ptr->count = newstack.count;
+    the_stack->top = newstack.top;
+    the_stack->count = newstack.count;
 
-    return stack_ptr;
+    return the_stack;
 };
 
 
-StackItem *Stack_new_node(void *data){
+
+StackItem Stack_make_item(void *data){
     /* Dynamically allocate memory for a single node
        and return a pointer to it.
 
        The 'contents' member of the node, which is
        a void pointer, is pointer to the function 
-       parameter.
+       parameter, whatever it is. 
 
        The caller should then manually call Stack_push()
        with the value returned by this function to actually
@@ -224,19 +297,66 @@ StackItem *Stack_new_node(void *data){
        Example
 
        int myint = 5;
-       StackItem *node = Stack_new_node(&myint); 
-       Stack_push(somestack_ptr, node);
+       StackItem item = Stack_make_item(&myint); 
+       Stack_push(somestack, item);
+       --------------------------------------
+
+       The purpose of this function is therefore
+       to essentially encapsulate any type of pointer***
+       into a StackItem, which is then returned to the
+       caller to be fed to Stack_push(). 
+
+       This is the only way to create a StackItem
+       to pass to Stack_push(), i.e. the interface
+       the caller is supposed to use.
+
+
+       ***Note that the parameter has to be a POINTER
+       TO something, rather than SOMETHING.
+       I.e.
+       These won't work:
+            StackItem newitem = Stack_make_item('5');
+            Stack_make_item(struct foo);
+        
+
+        The way this stack implementation is meant to be 
+        used is to push and pop pointer to types, rather
+        than the types themselves.
+
     */
-    StackItem *newnode = malloc(sizeof(StackItem));
-    if (newnode){
-        newnode->contents = data;
+    struct stackitem *new_item = malloc(sizeof(struct stackitem));
+    if (new_item){
+        new_item->contents = data;
     };
-    return newnode;
+    return new_item;
 };
 
 
 
 
 
+
+void Stack_destroy(Stack *stack_ptr){
+    /* Call free on *stack_ptr, and set it to NULL. 
+    */
+    if (! (*stack_ptr)){    // Stack_ptr is already NULL, nothing to free
+        return;
+    }
+    if ((*stack_ptr)->top){     // if the Stack isn't NULL, and Stack->top isn't NULL either, it means there are still items to deallocate
+        StackItem current = (*stack_ptr)->top;
+        StackItem previous = current->previous;
+        
+        while(current){
+           free(current); 
+           current = previous;
+           previous = (previous) ? previous->previous : NULL ;  // if previous is NULL, trying to access its 'previous' member will end in a crash 
+        };
+
+    }   
+    // no items to dallocate, but Stack is still not NULL: deallocate that
+    free(*stack_ptr);
+    *stack_ptr = NULL;
+
+};
 
 
