@@ -3,12 +3,6 @@
 
 typedef struct binary_tree BinaryTree; 
 
-struct binary_tree{
-    char data;
-    BinaryTree *left_child;
-    BinaryTree *right_child;
-
-};
 
 BinaryTree *BST_append(BinaryTree *tree, char the_value);
 bool BST_contains(BinaryTree *tree, char the_value);

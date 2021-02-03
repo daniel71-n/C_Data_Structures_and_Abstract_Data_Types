@@ -4,6 +4,15 @@
 #include <stdio.h>
 
 
+// structure of a binary tree node
+struct binary_tree{
+    char data;
+    BinaryTree *left_child;
+    BinaryTree *right_child;
+};
+
+
+
 
 /* ***************************** Private ****************************** */
 /* -------------------------------------------------------------------- */
