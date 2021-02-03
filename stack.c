@@ -38,18 +38,6 @@
 */
 
 
-struct stack{
-    unsigned int count;     // number of items in the queue
-    StackItem *top;
-};
-    
-struct item{
-    void *contents;     // a void pointer is used so that any type can be pointed to and thus enqueued;
-    StackItem *previous;
-};
-
-
-
 void Stack_init(Stack **stack_ptr){
     /* Initialize a Stack object. 
 
@@ -57,6 +45,23 @@ void Stack_init(Stack **stack_ptr){
        heap space for a Stack struct. If successful, 
        the inner members are initialized to zero
        or NULL, as appropriate.
+
+       This function is called when the Stack is meant to be
+       dynamic - that is to say, heap memory is allocated to 
+       it.
+
+       Example
+       Stack *somestack;
+       Stack_init(&somestack);  // allocates heap memory to *somestack
+
+       Since dynamic memory is allocated, it's imperative that
+       Stack_destroy() be called to tear down the stack and
+       free all the memory when the stack is no longer used.
+
+
+       The Stack_init_local() function (below) should be called instead when 
+       the stack is meant to have local scope and thus automatic duration. 
+        
     */
     Stack *temp = malloc(sizeof(Stack));
 
@@ -72,6 +77,28 @@ void Stack_init(Stack **stack_ptr){
 
 
 
+void Stack_init_local(Stack *stack_ptr){
+    /* Initialize stack_ptr by initializing its values. 
+
+       Malloc is not called - heap memory is not allocated. 
+       This means the stack has local scope (defined in a function)
+       and thus automatic duration: i.e. it will be automatically
+       deallocated when it goes out of scope. 
+       Therefore you don't need (you musn't) call Stack_destroy
+       on a stack initialized with Stack_init_local().
+
+       Calling free() (which Stack_destroy() does internally)
+       on memory that wasn't allocated dynamically is UNDEFINED
+       BEHAVIOR.
+
+       If the stack being initialized is instead supposed to
+       be heap-allocated, use Stack_init() instead.
+    */
+    stack_ptr->count = 0;
+    stack_ptr->top = NULL;
+};
+
+
 
 unsigned int Stack_count(Stack *stack_ptr){
     /* Return the number of items on the stack*/
@@ -79,14 +106,9 @@ unsigned int Stack_count(Stack *stack_ptr){
 };
 
 
-
-
 void Stack_destroy(Stack **stack_ptr){
     /* Call free on *stack_ptr, and set it to NULL. 
-
-       Note that the StackItems on the stack aren't malloc'ed
-       but declared manually outside the queue, and so 
-       there's nothing else to free.
+    // to do
     */
     free(*stack_ptr);
     *stack_ptr = NULL;
@@ -152,6 +174,68 @@ StackItem *Stack_peek(Stack *stack_ptr){
     */
     return stack_ptr->top; 
 };
+
+
+
+
+Stack *Stack_upend(Stack *stack_ptr){
+    /* Upend a stack and return the new stack. 
+
+       This is done by initializing a second stack first,
+       with Stack_init_local().
+       The items are popped off the first stack one by one
+       and pushed onto the second one as this happens.
+
+       The first stack is then pointed to the top of this second 
+       stack. 
+       The second stack has automatic duration- so it will go
+       out of scope when the function exits. 
+    */
+    Stack newstack;     // local-scope, automatic-duration stack
+    Stack_init_local(&newstack);
+    
+    StackItem *current = Stack_pop(stack_ptr);
+
+    while (current){
+        Stack_push(&newstack, current);
+        current = Stack_pop(stack_ptr);
+    };
+
+    stack_ptr->top = newstack.top;
+    stack_ptr->count = newstack.count;
+
+    return stack_ptr;
+};
+
+
+StackItem *Stack_new_node(void *data){
+    /* Dynamically allocate memory for a single node
+       and return a pointer to it.
+
+       The 'contents' member of the node, which is
+       a void pointer, is pointer to the function 
+       parameter.
+
+       The caller should then manually call Stack_push()
+       with the value returned by this function to actually
+       push the node onto the stack.
+
+       --------------------------------------
+       Example
+
+       int myint = 5;
+       StackItem *node = Stack_new_node(&myint); 
+       Stack_push(somestack_ptr, node);
+    */
+    StackItem *newnode = malloc(sizeof(StackItem));
+    if (newnode){
+        newnode->contents = data;
+    };
+    return newnode;
+};
+
+
+
 
 
 
