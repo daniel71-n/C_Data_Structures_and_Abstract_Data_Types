@@ -355,6 +355,9 @@ Heap *Heap_insert(Heap *the_heap, char the_value){
         // flip the stack upside down
         path_to_slot = Stack_upend(path_to_slot);
         Heap_sift_up(path_to_slot, newnode);
+
+        // have sift up return here the stack used (what's left of it)
+        // then call stack destroy on it
     };
 };
     
