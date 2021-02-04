@@ -16,6 +16,6 @@ void Queue_destroy(Queue *queue_ptr);  // tear down the queue object by freeing 
 QueueItem Queue_make_item(void *the_value);
 void Queue_enqueue(Queue the_queue, QueueItem the_item);  // add a new item to the queue
 void *Queue_dequeue(Queue the_queue);  // remove and return the oldest (i.e. next)item in the queue
-QueueItem Queue_peek(Queue the_queue);  // return the oldest item in the list, but without removing it
+void *Queue_peek(Queue the_queue);  // return the oldest item in the list, but without removing it
 unsigned int Queue_count(Queue the_queue); // return the number of items in the queue
 

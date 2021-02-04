@@ -50,16 +50,8 @@ struct queueitem{
 };
 
 
-/* ********************* PRIVATE ***************************** */
-QueueItem Queue_make_item(void *the_value){
-    QueueItem newitem = malloc(sizeof(struct queueitem));
 
-    if (newitem){
-        newitem->contents = the_value;
-        newitem->next = NULL;
-    }
-    return newitem;
-}
+
 
 
 
@@ -127,6 +119,18 @@ void Queue_destroy(Queue *queue_ptr){
 
 
 
+
+QueueItem Queue_make_item(void *the_value){
+    QueueItem newitem = malloc(sizeof(struct queueitem));
+
+    if (newitem){
+        newitem->contents = the_value;
+        newitem->next = NULL;
+    }
+    return newitem;
+}
+
+
 void Queue_enqueue(Queue the_queue, QueueItem the_item){
     /* Add an item to the queue.
 
@@ -181,7 +185,7 @@ void *Queue_dequeue(Queue the_queue){
 
 
 
-QueueItem Queue_peek(Queue the_queue){
+void *Queue_peek(Queue the_queue){
     /* Return the oldest item in the queue
        but without removing it from the queue,
        such that this is the item that will be returned
@@ -192,7 +196,7 @@ QueueItem Queue_peek(Queue the_queue){
     if (!the_queue){
         return NULL;
     }
-    return the_queue->head;
+    return the_queue->head->contents;
 };
 
 
