@@ -40,18 +40,30 @@
 
 struct queue{
     unsigned int count;     // number of items in the queue
-    QueueItem *head;
-    QueueItem *tail;
+    QueueItem head;
+    QueueItem tail;
 };
     
-struct item{
+struct queueitem{
     void *contents;     // a void pointer is used so that any type can be pointed to and thus enqueued;
-    QueueItem *next;
+    QueueItem next;
 };
 
 
+/* ********************* PRIVATE ***************************** */
+QueueItem Queue_make_item(void *the_value){
+    QueueItem newitem = malloc(sizeof(struct queueitem));
 
-void Queue_init(Queue **queue_ptr){
+    if (newitem){
+        newitem->contents = the_value;
+        newitem->next = NULL;
+    }
+    return newitem;
+}
+
+
+
+void Queue_init(Queue *queue_ptr){
     /* Initialize a Queue object. 
 
        Takes a Queue reference pointer and calls malloc to allocate
@@ -59,7 +71,7 @@ void Queue_init(Queue **queue_ptr){
        the, the inner members are initialized to zero
        or NULL, as appropriate.
     */
-    Queue *temp = malloc(sizeof(Queue));
+    Queue temp = malloc(sizeof(struct queue));
 
     if (!temp){
         *queue_ptr = NULL;
@@ -75,86 +87,101 @@ void Queue_init(Queue **queue_ptr){
 
 
 
-unsigned int Queue_count(Queue *queue_ptr){
+unsigned int Queue_count(Queue the_queue){
     /* Return the number of items in the queue */
-    return queue_ptr->count;
+    return the_queue->count;
 };
 
 
 
 
-void Queue_destroy(Queue **queue_ptr){
+void Queue_destroy(Queue *queue_ptr){
     /* Call free on *queue_ptr, and set it to NULL. 
 
        Note that the QueueItems in the queue aren't malloc'ed
        but declared manually outside the queue, and so 
        there's nothing else to free.
     */
-    free(*queue_ptr);
-    *queue_ptr = NULL;
+    // nothing to free, there's no queue (queue is NULL)
+    if (!(*queue_ptr)){
+        return;
+    }
 
+    // there are still items on the queue -- free all of them
+    if ((*queue_ptr)->head){
+        QueueItem current = (*queue_ptr)->head;
+        QueueItem temp;
+        while (current){
+            temp = current;
+            current = temp->next;
+            free(temp);
+        };
+    }
+
+    // else there's a queue, but it's empty (Queue but no QueueItems). Deallocate that
+    if (*queue_ptr){
+        free(*queue_ptr);
+        *queue_ptr = NULL;
+    };
 };
 
 
 
-void Queue_enqueue(Queue *queue_ptr, QueueItem *item_ptr){
+void Queue_enqueue(Queue the_queue, QueueItem the_item){
     /* Add an item to the queue.
-    
-    Note that the second argument is a QueueItem pointer. 
-    The QueueItem struct has a 'contents' field which is 
-    a void pointer. This can be used to point to any data type,
-    be it char, int, whatever. 
-    This means that if you want to enqueue X, you will have to 
-    declare a QueueItem and set it to point to X.
 
-    For example: 
-
-        int someint = 6;
-        Queueitem item1; 
-        item1.contents = &someint; 
-        Queue_enqueue(&item1);
-
-
-    Note that since items1.contents is a void pointer, 
-    the consumer will have to know how to handle this 
-    when returned by the Queue_dequeue subroutine.
+       the_item needs to have been created with a call
+       to Queue_make_item(). 
     */
-    if (!queue_ptr->count){
-        queue_ptr->head = item_ptr, queue_ptr->tail = item_ptr;
-        item_ptr->next = NULL;
+    if (!the_queue->count){
+        the_queue->head = the_item, the_queue->tail = the_item;
     }else{
         QueueItem *temp;
-        queue_ptr->tail->next = item_ptr;
-        queue_ptr->tail = item_ptr; 
+        the_queue->tail->next = the_item;
+        the_queue->tail = the_item; 
     };
 
-    queue_ptr->count++;
+    the_queue->count++;
 };
 
-QueueItem *Queue_dequeue(Queue *queue_ptr){
+
+
+void *Queue_dequeue(Queue the_queue){
     /* Remove and return an item from the queue.
        This item is always the oldest item, according
        to the FIFO principle.
 
        If called on an empty queue, NULL is returned.
+
+        NOTE
+        what's returned is not a QueueItem, but its 'contents'
+        field, which is a void pointer. This is the value that
+        was passed to Queue_make_item(), the result of which
+        was then appended to the queue with Queue_enqueue().
+
+        In other words, Queue_dequeue() returns
+        the_queue->head->contents, not the_queue->head.
+        the_queue->head gets deallocated.
     */
-    QueueItem *oldest_item = queue_ptr->head;
-    if (!oldest_item){  // if there are no items return NULL
-        return NULL;
-    };
-    queue_ptr->head = queue_ptr->head->next;    // if this was the only item in the queue, its 'next' will have been
+    if (!the_queue->count){
+        return the_queue->head;
+    }
+    void *item = the_queue->head->contents;
+    QueueItem temp = the_queue->head;
+    the_queue->head = the_queue->head->next;    // if this was the only item in the queue, its 'next' will have been
                                                 // set to NULL, so this takes care of setting head to NULL as well
-    queue_ptr->count--;
+    free(temp);
+    the_queue->count--;
     
-    if (!queue_ptr->count){    // if the queue is empty, then the tail needs to be NULL, just as the head
-        queue_ptr->tail = NULL;
+    if (!the_queue->count){    // if the queue is empty, then the tail needs to be NULL, just as the head
+        the_queue->tail = NULL;
     };
-    return oldest_item; 
+    return item; 
 };
 
 
 
-QueueItem *Queue_peek(Queue *queue_ptr){
+QueueItem Queue_peek(Queue the_queue){
     /* Return the oldest item in the queue
        but without removing it from the queue,
        such that this is the item that will be returned
@@ -162,7 +189,10 @@ QueueItem *Queue_peek(Queue *queue_ptr){
 
        Returns NULL if called on an empty queue.
     */
-    return queue_ptr->head; 
+    if (!the_queue){
+        return NULL;
+    }
+    return the_queue->head;
 };
 
 
