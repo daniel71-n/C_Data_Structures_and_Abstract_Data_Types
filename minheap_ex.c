@@ -425,7 +425,6 @@ Heap Heap_insert(Heap the_heap, char the_value){
     }
     // declare and initialize a Stack type
     Stack path_to_node; 
-    Stack_init(&path_to_node);
     // compute the path from root to node (the next insertion spot)
     path_to_node = Heap_find_path_to_node_P(the_heap, the_heap->count+1);  
     // the new insertion spot is always n+1, where n is the number of nodes in the heap
@@ -611,6 +610,7 @@ void static Heap_destroy_P(HeapNode node){
     Heap_destroy_P(node->left);
     Heap_destroy_P(node->right);
     free(node);
+    return;
 }
 
 void Heap_destroy(Heap *heap_ref){
