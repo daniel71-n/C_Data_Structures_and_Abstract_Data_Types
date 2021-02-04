@@ -31,20 +31,22 @@
 
 
 /* ******* Typedefs ******* */
-typedef struct minheap Heap;
-typedef struct minheapnode HeapNode;
+typedef struct minheap *Heap;
+typedef struct minheapnode *HeapNode;
 
 
 
 
 /* ******** Function prototypes ********* */
-uint16_t Heap_count(Heap *the_heap);
-Heap *Heap_insert(Heap *the_heap, char the_value);
+void Heap_init(Heap *heap_ref);
+uint16_t Heap_count(Heap the_heap);
+Heap Heap_insert(Heap the_heap, char the_value);
 char Heap_delete(Heap *the_heap, char the_value);
-char Heap_pop_root(Heap *the_heap);
+char Heap_pop_root(Heap the_heap);
 char Heap_peek_root(Heap *the_heap);
 void Heap_maxheapify(Heap *the_heap);
 void Heap_minheapify(Heap *the_heap);
 void Heap_destroy(Heap **heap_ref);
-
+void Heap_print(Heap the_heap);   // traverse the heap in order and print out the value of each node to stdout
+void Heap_print_BF(Heap the_heap);   // traverse the heap in order and print out the value of each node to stdout
 
