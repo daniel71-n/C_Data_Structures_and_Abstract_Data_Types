@@ -258,7 +258,7 @@
 // structure of a Min-Heap node
 struct minheap{
     HeapNode root;
-    uint16_t count;
+    uint32_t count;
 };
 
 struct minheapnode{
@@ -269,7 +269,7 @@ struct minheapnode{
 
 
 
-uint16_t Heap_count(Heap the_heap){
+uint32_t Heap_count(Heap the_heap){
     return the_heap->count;
 };
 
@@ -287,10 +287,10 @@ void Heap_init(Heap *heap_ref){
         newheap->count = 0;
     }
 
-    (*heap_ref) = newheap;
+    *heap_ref = newheap;
 };
 
-static Stack Heap_find_path_to_node_P(Heap the_heap, int16_t node_position){
+static Stack Heap_find_path_to_node_P(Heap the_heap, int32_t node_position){
     Stack way_down;   
     Stack_init(&way_down);
     // trace the path from the root to the free slot by pushing each node along the path
@@ -305,12 +305,12 @@ static Stack Heap_find_path_to_node_P(Heap the_heap, int16_t node_position){
     Stack_push(way_down, node);     // push the node onto the way_down stack
 
     
-    uint16_t temp;   // used to test the result of the bit shift in the while loop below
+    uint8_t temp;   // used to test the result of the bit shift in the while loop below
     HeapNode current = (HeapNode)Stack_peek(way_down); 
     
     // turn the bits in node_position around
     {
-        uint16_t bits_flipped = 1;
+        uint32_t bits_flipped = 1;
         while (node_position){
             temp = node_position & 1;
 
@@ -327,34 +327,9 @@ static Stack Heap_find_path_to_node_P(Heap the_heap, int16_t node_position){
     }
 
 
-    while (node_position > 1){  // > than 1 because the leftmost bit in heap_size needs to be disregarded
-        temp = node_position & 1;    // return the bitwise not of the AND operation between node_position and 1
-        /* the reason we take the bitwise not instead of the actual result is the in which
-         * the path from root to the insert spot is put onto the stack. The first AND gets
-         * us the immediate parent of node_position - NOT the first child of root that we
-         * should go down (left or right). That is, each bitwise shift here goes UP the
-         * tree, not DOWN the tree -- it goes from node_position to root, not from root to
-         * node_position. We need the latter, not the former. But if the route we get is
-         * right-left-right-left (1-0-1-0), where we start at node_position and end at
-         * root, then inverting this to left-right-left-right (0-1-0-1) gives us the path
-         * from root to node_position.
-                Uninverted: 
-                root
-            left    right
-        left slot
-
-        The starts from the point of view of slot: 
-        - right (it's the right child of its parent)
-        - left (its parent is the left child of its parent)
-        If we then were to traverse the tree down that way -- go right, go left, we would be inserting
-        the new node as the left child of of the right child of root! That's because the going down is
-        from the perspective of the parent, not the child. 
-
-        If we INVERT that, we change the 'perspective' of the child node to that of the parent:
-         right, left becomes left, right.
-        Go 1 to the left, then one to the right. Sure enough, that gets us to 'slot', which is the
-        spot we needed to get to.
-         */  
+    while (node_position > 1){  
+        temp = node_position & 1;    
+         
         if (temp == 0){
             node = Stack_make_item(current->left);
             current = current->left;
@@ -473,8 +448,6 @@ Heap Heap_insert(Heap the_heap, char the_value){
 
         // sift up the new node
 
-        // flip the stack upside down
-         // path_to_node = Stack_upend(path_to_node);   // path_to_node is now the path from node to root
         Heap_sift_up_P(path_to_node, newnode);
         
         // the stack is no longer needed : deallocate it
@@ -537,7 +510,7 @@ static void Heap_sift_down_P(HeapNode the_node){
         // trying to access the -> left or ->right field of a NULL Heap will crash the
         // system. So that needs to be checked against first
 
-        // case 1: both kids are not NULL
+        // case 1: both children are not NULL
         if (the_node->left && the_node->right){
             HeapNode smaller= (the_node->left->data < the_node->right->data) ? the_node->left : the_node->right; 
 
@@ -591,6 +564,13 @@ static void Heap_sift_down_P(HeapNode the_node){
 
 
 char Heap_pop_root(Heap the_heap){
+    /* It's up to the caller to make sure the_heap
+       has been initialzied correctly and is not NULL
+       and that the_heap isn't empty. 
+       If either of the above isn't so, it will lead to a crash
+       or worse.
+
+    */
     char return_val = the_heap->root->data;
 
     if (the_heap->count == 1){
@@ -624,9 +604,27 @@ char Heap_pop_root(Heap the_heap){
 
 
 
+void static Heap_destroy_P(HeapNode node){
+    if (!node){
+        return;
+    }
+    Heap_destroy_P(node->left);
+    Heap_destroy_P(node->right);
+    free(node);
+}
 
+void Heap_destroy(Heap *heap_ref){
+    if (!(*heap_ref)){
+        return;
+    }
+    if (!(*heap_ref)->count){
+        free((*heap_ref));
+        *heap_ref = NULL; 
+        return;
+    }
+    Heap_destroy_P((*heap_ref)->root); 
 
-
+};
 
 /*
 void Heap_insert(Heap *the_heap, char the_value);
