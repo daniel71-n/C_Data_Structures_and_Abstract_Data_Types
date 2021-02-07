@@ -4,20 +4,13 @@
 #include <stdio.h>
 
 
-// structure of a binary tree node
-struct binary_tree{
-    char data;
-    BinaryTree *left_child;
-    BinaryTree *right_child;
-};
-
 
 
 
 /* ***************************** Private ****************************** */
 /* -------------------------------------------------------------------- */
 
-static char BST_get_in_order_successor_P(BinaryTree *tree_ptr){
+static char BST_get_in_order_successor_P(BinaryTree tree_ptr){
     /* Return the value of the in-order successor of tree_ptr.
        Called by the node removal routine.
     */
@@ -29,7 +22,7 @@ static char BST_get_in_order_successor_P(BinaryTree *tree_ptr){
 
 
 
-static uint16_t BST_find_depth_P(BinaryTree *tree){
+static uint16_t BST_find_depth_P(BinaryTree tree){
     /* Traverse the tree depth-first and return when reaching a leaf. 
        On the way back up the call chain, each return value (1) from
        the returning function is added up. The sum total is then
@@ -58,7 +51,7 @@ static uint16_t BST_find_depth_P(BinaryTree *tree){
 
 
 
-static void BST_cut_down_P(BinaryTree *tree_ptr){
+static void BST_cut_down_P(BinaryTree tree_ptr){
     /* Traverse the tree in post-order (left-right-root)
        and free all the nodes. 
 
@@ -91,15 +84,15 @@ static void BST_cut_down_P(BinaryTree *tree_ptr){
 
 
 
-BinaryTree *BST_insert(BinaryTree *tree, char the_value){
+BinaryTree BST_insert(BinaryTree tree, char the_value){
     /* Insert the_value into the tree. 
     
        The insertion operation is such that the sorted order of
        the tree is maintained. 
     */
     if (!tree){
-        BinaryTree *newnode;
-        BinaryTree *temp = NULL;
+        BinaryTree newnode;
+        BinaryTree temp = NULL;
         
         if (!(temp = malloc(sizeof(BinaryTree)))){
         return NULL;
@@ -129,7 +122,7 @@ BinaryTree *BST_insert(BinaryTree *tree, char the_value){
 
 
 
-bool BST_contains(BinaryTree *tree, char the_value){
+bool BST_contains(BinaryTree tree, char the_value){
     /* Return true if the tree contains the_value, false otherwise */
 
     if (!tree){
@@ -148,7 +141,7 @@ bool BST_contains(BinaryTree *tree, char the_value){
 
 
 
-uint16_t BST_count_nodes(BinaryTree *tree){
+uint16_t BST_count_nodes(BinaryTree tree){
     /* Count the number of nodes in the tree recursively */
     if (!tree){     // if tree is null
         return 0;
@@ -159,7 +152,7 @@ uint16_t BST_count_nodes(BinaryTree *tree){
 
 
 
-char BST_find_min(BinaryTree *tree){
+char BST_find_min(BinaryTree tree){
     /* Find and return the minimum value in tree.
        This function assumes the tree contains at least one node,
        and thus a crash will happen if the argument is a NULL BinaryTree pointer.
@@ -194,7 +187,7 @@ char BST_find_min(BinaryTree *tree){
 
 
 
-char BST_find_max(BinaryTree *tree){
+char BST_find_max(BinaryTree tree){
     /* Find and return the minimum value in tree.
        This function assumes the tree contains at lesat one node,
        and thus a crash will happen if the argument is a NULL BinaryTree pointer.
@@ -215,7 +208,7 @@ char BST_find_max(BinaryTree *tree){
 
 
 
-void BST_invert(BinaryTree *tree){
+void BST_invert(BinaryTree tree){
     /* Switch the positions of each left and right child of each node 
        in the tree. 
        Also known as 'mirroring'.
@@ -224,7 +217,7 @@ void BST_invert(BinaryTree *tree){
         return;
     };
 
-    BinaryTree *temp;
+    BinaryTree temp;
     temp = tree->left_child;
     tree->left_child = tree->right_child;
     tree->right_child = temp;
@@ -237,7 +230,7 @@ void BST_invert(BinaryTree *tree){
 
 
 
-uint16_t BST_max_depth(BinaryTree *tree){
+uint16_t BST_max_depth(BinaryTree tree){
     /* Decrement the value returned by BST_find_depth()
        by 1 and return that. 
 
@@ -259,7 +252,7 @@ uint16_t BST_max_depth(BinaryTree *tree){
 
 
 
-void BST_print(BinaryTree *tree){
+void BST_print(BinaryTree tree){
    /* Print out the values of all the nodes in tree in ascending order.
       The tree is traversed - 'walked' - 'in-order' (left-root-right).
    */ 
@@ -275,7 +268,7 @@ void BST_print(BinaryTree *tree){
 
 
 
-bool BST_is_same(BinaryTree *tree1, BinaryTree *tree2){     
+bool BST_is_same(BinaryTree tree1, BinaryTree tree2){     
     /* Return true if tree1 and tree2 are completely identical,
        both in terms of structure and values stored, and false otherwise.
     */
@@ -297,7 +290,7 @@ bool BST_is_same(BinaryTree *tree1, BinaryTree *tree2){
 
 
 
-BinaryTree *BST_remove_node(BinaryTree *tree, char the_value){
+BinaryTree BST_remove_node(BinaryTree tree, char the_value){
     /* Remove the_value from the tree, and return a pointer to 
        the tree. 
        
@@ -351,7 +344,7 @@ BinaryTree *BST_remove_node(BinaryTree *tree, char the_value){
         // case C3. one child --> replace the node with its only child
         else{
             if (tree->left_child == NULL){
-                BinaryTree *temp = tree->right_child;
+                BinaryTree temp = tree->right_child;
                 free(tree);
                 tree = temp;    // make the current node its successor
                 /*
@@ -365,7 +358,7 @@ BinaryTree *BST_remove_node(BinaryTree *tree, char the_value){
                 */
             }
             else if (tree->right_child == NULL){
-                BinaryTree *temp = tree->left_child;
+                BinaryTree temp = tree->left_child;
                 free(tree);
                 tree = temp;
             }
@@ -377,7 +370,7 @@ return tree;
 
 
 
-void BST_destroy(BinaryTree **tree_ref){
+void BST_destroy(BinaryTree *tree_ref){
     /* Free all the maclloc'ed memory associated with
        the tree, then set the tree pointer back in caller
        space to NULL (note that the function parameter here
@@ -392,10 +385,70 @@ void BST_destroy(BinaryTree **tree_ref){
 };
 
 
+
+
+BinaryTree BST_from_array(char the_array[], unsigned int array_length){
+/* Build a BinaryTree based on the elements stored in the_array.
+
+   The array_length parameter is needed so as to know where to stop
+   the iteration through the array and not read out-of-bounds memory.
+
+   Returns a BinaryTree.
+*/
+    BinaryTree tree;    // return val
+
+    for (unsigned int i = 0; i < array_length; i++){
+        tree = BST_insert(tree, the_array[i]);
+    }
+
+    return tree;
+}
+
+
+
+unsigned int BST_to_array(BinaryTree the_tree, char the_array[], unsigned int index){
+/* Traverses the_tree 'in-order' and stores the value of each node
+   in the_array.
+
+   The_array has to be long enough to accomodate all the values in the tree.
+   Specifically, the length of the array has to be >= the value returned
+   by BST_count_nodes().
+
+                            * * *
+   Parameters
+    - the_tree : the tree to traverse
+    - the_array : the array to fill with the values of the nodes in the_tree
+    - index : the first index in the array, i.e. where in the array to start
+      writing. This is normally always 0.
+*/
+    if (!the_tree){
+                return 0;
+            }
+            
+            unsigned temp = 0;
+            
+            temp = BST_to_array(the_tree->left_child, the_array, index);
+            if (temp){
+                index = temp;
+            }
+
+            the_array[index] = the_tree->data;
+            index++; 
+
+            temp = index;
+            index = BST_to_array(the_tree->right_child, the_array, index);
+            if (temp){
+                index = temp;
+            }
+            
+            return index;
+
+}
+
+
+
 /*
 To implement: 
-BinaryTree *BST_from_array(char the_array[]);
-void BST_to_array(char the_array[]);
 BinaryTree *BST_remove_duplicates(BinaryTree* tree);
 BinaryTree *BST_copy_tree(BinaryTree *tree);
 char BST_find_nth_max(BinaryTree *tree);
