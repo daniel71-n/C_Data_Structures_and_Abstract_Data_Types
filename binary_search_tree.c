@@ -83,6 +83,14 @@ static void BST_cut_down_P(BinaryTree tree_ptr){
 
 
 
+void BST_init(BinaryTree *tree_ref){
+    /* Initialize BinaryTree (pointed to by tree_ref) to NULL. 
+       This MUST be called before using the tree. 
+    */
+    *tree_ref = NULL;
+
+
+};
 
 BinaryTree BST_insert(BinaryTree tree, char the_value){
     /* Insert the_value into the tree. 
@@ -94,7 +102,7 @@ BinaryTree BST_insert(BinaryTree tree, char the_value){
         BinaryTree newnode;
         BinaryTree temp = NULL;
         
-        if (!(temp = malloc(sizeof(BinaryTree)))){
+        if (!(temp = malloc(sizeof(struct binary_tree)))){
         return NULL;
         };
     
@@ -371,7 +379,7 @@ return tree;
 
 
 void BST_destroy(BinaryTree *tree_ref){
-    /* Free all the maclloc'ed memory associated with
+    /* Free all the malloc'ed memory associated with
        the tree, then set the tree pointer back in caller
        space to NULL (note that the function parameter here
        is a tree *reference* pointer).

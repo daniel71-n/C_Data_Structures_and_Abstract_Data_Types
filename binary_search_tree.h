@@ -12,6 +12,7 @@ struct binary_tree{
 
 
 
+void BST_init(BinaryTree *tree_ref);
 BinaryTree BST_insert(BinaryTree tree, char the_value);
 bool BST_contains(BinaryTree tree, char the_value);
 void BST_invert(BinaryTree tree); 
