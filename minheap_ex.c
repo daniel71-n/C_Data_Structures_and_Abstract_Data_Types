@@ -310,19 +310,17 @@ static Stack Heap_find_path_to_node_P(Heap the_heap, int32_t node_position){
     
     // turn the bits in node_position around
     {
-        uint32_t bits_flipped = 1;
+        uint32_t bits_flipped = 1;  // this first, leftmost bit will be disregarded when tracing the path from root to node
+
         while (node_position){
             temp = node_position & 1;
 
-            if(temp){
-                bits_flipped <<= 1;
-                bits_flipped += 1;
-            }else{
-                bits_flipped <<= 1;
-            }
+            bits_flipped <<= 1;
+            bits_flipped += temp;
             node_position >>= 1;
         }
-        bits_flipped>>=1;
+
+        bits_flipped>>=1;   // the rightmost bit in bits_flipped is the leftmost bit in node_position; drop it.
         node_position = bits_flipped;
     }
 
