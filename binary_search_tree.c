@@ -1,6 +1,5 @@
 #include "binary_search_tree.h"
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
 
 
@@ -125,6 +124,46 @@ BinaryTree BST_insert(BinaryTree tree, char the_value){
     
     return tree;    
 };
+
+
+
+
+BinaryTree BST_insert_nd(BinaryTree tree, char the_value){
+    /* Insert the_value into the tree, unless it's a duplicate.
+
+       Insert, no duplicates.
+    
+       The insertion operation is such that the sorted order of
+       the tree is maintained. 
+    */
+    if (!tree){
+        BinaryTree newnode;
+        BinaryTree temp = NULL;
+        
+        if (!(temp = malloc(sizeof(struct binary_tree)))){
+        return NULL;
+        };
+    
+        newnode = temp;
+        newnode->left_child = NULL;
+        newnode->right_child = NULL; 
+        newnode->data = the_value;
+
+        tree = newnode; 
+        return tree;
+        }
+
+    else{
+        if (the_value < tree->data){
+            tree->left_child = BST_insert(tree->left_child, the_value);
+        }else if (the_value > tree->data) {
+            tree->right_child= BST_insert(tree->right_child, the_value);
+        };
+    };
+    
+    return tree;    
+};
+
 
 
 
