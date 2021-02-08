@@ -1,4 +1,3 @@
-#include <bits/stdint-uintn.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -25,7 +24,6 @@
 
 // a mutable, sorted set
 typedef struct dynamic_set *DSet;
-//typedef struct set_elements *DSetItems;
 
 
 void Set_init(DSet *the_set);
