@@ -133,8 +133,8 @@ bool Set_is_subset(DSet set1, DSet set2){
 
     // iterate over the arrays and compare. If any incongruity is found, return false
     for (uint16_t i = 0; i < set1_size; i++){
-        if (set1_items[i] != set2_items[i]){
-            return false;
+        if (!Set_contains(set2, set1_items[i])){
+                return false;
         }
     }
     free(set1_items);
