@@ -97,7 +97,7 @@ void Vect_rem(Vect target_vector, int32_t index);
 void Vect_range_rem(Vect target_vector, int32_t starting_index, int32_t ending_index);
 
 void Vect_append(Vect target_vector, void *val);
-int16_t Vect_contains(Vect target_vector, void *val);
+int32_t Vect_contains(Vect target_vector, void *val);
 void Vect_set(Vect target_vector, void *val, int32_t index);    
 
 char Vect_c_pop(Vect target_vector);

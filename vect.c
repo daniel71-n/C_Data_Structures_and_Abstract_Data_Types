@@ -375,7 +375,7 @@ void Vect_range_rem(Vect target_vector, int32_t starting_index, int32_t ending_i
 
 
 
-int16_t Vect_contains(Vect target_vector, void *val){
+int32_t Vect_contains(Vect target_vector, void *val){
     /* Return an integer representing the index of the first occurence of val, if found, 
        else -1. 
     */
