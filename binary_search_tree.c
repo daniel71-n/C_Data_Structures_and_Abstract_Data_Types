@@ -155,9 +155,9 @@ BinaryTree BST_insert_nd(BinaryTree tree, char the_value){
 
     else{
         if (the_value < tree->data){
-            tree->left_child = BST_insert(tree->left_child, the_value);
+            tree->left_child = BST_insert_nd(tree->left_child, the_value);
         }else if (the_value > tree->data) {
-            tree->right_child= BST_insert(tree->right_child, the_value);
+            tree->right_child = BST_insert_nd(tree->right_child, the_value);
         };
     };
     
@@ -443,6 +443,7 @@ BinaryTree BST_from_array(char the_array[], unsigned int array_length){
    Returns a BinaryTree.
 */
     BinaryTree tree;    // return val
+    BST_init(&tree);
 
     for (unsigned int i = 0; i < array_length; i++){
         tree = BST_insert(tree, the_array[i]);
@@ -453,7 +454,7 @@ BinaryTree BST_from_array(char the_array[], unsigned int array_length){
 
 
 
-unsigned int BST_to_array(BinaryTree the_tree, char the_array[], unsigned int index){
+uint32_t BST_to_array(BinaryTree the_tree, char the_array[], uint32_t index){
 /* Traverses the_tree 'in-order' and stores the value of each node
    in the_array.
 
@@ -472,7 +473,7 @@ unsigned int BST_to_array(BinaryTree the_tree, char the_array[], unsigned int in
                 return 0;
             }
             
-            unsigned temp = 0;
+            uint32_t temp = 0;
             
             temp = BST_to_array(the_tree->left_child, the_array, index);
             if (temp){
