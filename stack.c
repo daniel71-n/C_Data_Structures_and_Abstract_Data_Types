@@ -234,7 +234,7 @@ void *Stack_peek(Stack the_stack){
        the stack, such that this is the item that will 
        be returned by Stack_pop(), when called.
 
-       Returns NULL if called on an empty queue.
+       Returns NULL if called on an empty stack.
 
        **********
        NOTE
@@ -243,6 +243,9 @@ void *Stack_peek(Stack the_stack){
        Stack_pop()  --> unlike Stack_pop(), though,
        Stack_peek() does NOT deallocate Stack->top.
     */
+    if (!the_stack->count){
+        return NULL;
+    }
     return the_stack->top->contents; 
 };
 
