@@ -14,13 +14,9 @@
  * This dynamic resizing capability is offered through the interface presented down below on
  * this page. 
  * 
- * There interface allows the management of two different types of array (only one at the same
+ * The interface allows the management of two different types of array (only one at the same
  * time) : a char array, and an int32_t array. The size of an int32_t is platform-dependent.
- * It'll be 4 bytes, if available. Not that it's crucial that vect be initialized and the 
- * associated Vect functions be called with the right type (int32_t). Failure to do so might
- * either lead to an error, or a subtle bug. For example, passing a signed long long instead
- * of an int32_t is undefined behavior, as far as this implementation goes, as  the size of
- * a long long won't fit insode the memory reserved for a int32_t.
+ * It'll be 4 bytes, if available. 
  *
  * The length of the array - whether char or int32_t - is limited by the size of 
  * int32_t (as int32_t is also the type used to hold the length and indexes of the managed
