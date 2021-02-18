@@ -1,3 +1,6 @@
+#ifndef C_VECT_H
+#define C_VECT_H
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -106,5 +109,7 @@ int32_t Vect_i_pop(Vect target_vector);
 void Vect_c_add(Vect target_vector, char *string_to_append);
 void Vect_i_add(Vect target_vector, int32_t *int_array_to_append, int32_t how_many);
 
+
+#endif
 
 

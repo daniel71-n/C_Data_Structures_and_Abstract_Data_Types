@@ -1,3 +1,5 @@
+#ifndef SLL_H
+#define SLL_H
 
 /* *********************
  * Implementation Notes.
@@ -8,6 +10,8 @@
 
 /* ************ Abbreviations ************** */
 /* Sll = singly linked list 
+ * R = recursive (as in SLL_Rreverse_list())
+ * I = iterative (as in Ireverse_list())
  */
 
 
@@ -55,7 +59,7 @@ void SLL_destroy_list(Head *head_ptr); // free all the memory associated with th
 
 
 
-
+#endif
 
 
 

@@ -1,3 +1,5 @@
+#ifndef Q_H
+#define Q_H
 
 /* Implementation of a queue ADT (Abstract Data Type). 
  * A queue organizes its data in a FIFO -- First-in-first-out - manner, 
@@ -19,3 +21,4 @@ void *Queue_dequeue(Queue the_queue);  // remove and return the oldest (i.e. nex
 void *Queue_peek(Queue the_queue);  // return the oldest item in the list, but without removing it
 unsigned int Queue_count(Queue the_queue); // return the number of items in the queue
 
+#endif

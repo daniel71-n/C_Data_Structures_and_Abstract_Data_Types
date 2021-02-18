@@ -1,4 +1,5 @@
-
+#ifndef MINHEAP_EX_H
+#define MINHEAP_EX_H
 
 /* ***************************************** Notes ******************************** *
  * ----------------------------------------------------------------------------------
@@ -50,3 +51,5 @@ void Heap_destroy(Heap *heap_ref);
 void Heap_print(Heap the_heap);   // traverse the heap in order and print out the value of each node to stdout
 void Heap_print_BF(Heap the_heap);   // traverse the heap in order and print out the value of each node to stdout
 
+
+#endif

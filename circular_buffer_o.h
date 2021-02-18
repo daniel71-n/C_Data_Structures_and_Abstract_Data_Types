@@ -1,3 +1,5 @@
+#ifndef CBO_H
+#define CBO_H
 
 /*----------------------------------------------Implementation notes-----------------------------------------
               ******************************************************************************
@@ -79,3 +81,4 @@ bool CircularBuffer_is_full(CircularBuffer *cb_ptr);
 void CircularBuffer_destroy_buffer(CircularBuffer *cb_ptr);  // free all the space that has been Malloc-ated.
 
 
+#endif

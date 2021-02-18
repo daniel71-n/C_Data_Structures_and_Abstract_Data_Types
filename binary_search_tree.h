@@ -1,3 +1,7 @@
+#ifndef BST_H
+#define BST_H
+
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -31,5 +35,5 @@ void BST_destroy(BinaryTree *tree_ref);
 
 
 
-
+#endif
 

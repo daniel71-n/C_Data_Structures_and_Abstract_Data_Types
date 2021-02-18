@@ -1,3 +1,7 @@
+#ifndef MINHEAP_IM_H
+#define MINHEAP_IM_H
+
+
 #include <stdint.h>
 
 
@@ -20,7 +24,7 @@ void Heap_destroy(Heap *heap_ref);
 
 
 
-
+#endif
 
 
 

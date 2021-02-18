@@ -1,3 +1,6 @@
+#ifndef MUTSET_H
+#define MUTSET_H
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -28,7 +31,7 @@ typedef struct dynamic_set *DSet;
 
 void Set_init(DSet *the_set);
 bool Set_contains(DSet the_set, char the_value); 
-char *Set_items(DSet the_set); // returns a dynamically-allocated char array containing all the items in the set
+char *Set_items(DSet the_set); // returns a dynamically - allocated char array containing all the items in the set
 uint16_t Set_size(DSet the_set);
 bool Set_is_empty(DSet the_set); 
 bool Set_is_same(DSet set1, DSet set2);
@@ -48,7 +51,7 @@ void Set_destroy(DSet *the_set);   // destroy a DSet and free all memory associa
 
 
 
-
+#endif
 
 
 
